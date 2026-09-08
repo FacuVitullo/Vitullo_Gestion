@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitullo Gestión Inmobiliaria | La Paz, Córdoba</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brandNavy: '#0f172a',
+                        brandBlue: '#2563eb',
+                        brandBlueHover: '#1d4ed8',
+                        brandRed: '#e11d48',
+                        brandRedHover: '#be123c',
+                        brandLight: '#f8fafc'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');</style>
+</head>
+<body class="bg-white text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- IDENTICAL NAVIGATION -->
+    <nav class="bg-white shadow-sm border-b border-gray-100 w-full z-50 sticky top-0">
+        <div class="h-1 w-full bg-gradient-to-r from-brandBlue via-brandNavy to-brandRed"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="text-2xl font-bold tracking-tight text-brandNavy flex items-center">
+                        Vitullo<span class="text-brandBlue ml-1">Gestión</span><span class="text-brandRed text-3xl leading-none">.</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-brandBlue font-semibold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-brandRed">Inicio</a>
+                    <a href="propiedades.html" class="text-gray-600 hover:text-brandBlue font-medium transition-colors">Propiedades</a>
+                    <a href="contact.html" class="bg-brandBlue text-white px-6 py-2.5 rounded-lg hover:bg-brandBlueHover transition-colors font-semibold shadow-sm border-r-2 border-brandRed">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- END IDENTICAL NAVIGATION -->
+
+    <!-- Hero Section -->
+    <main class="flex-grow">
+        <section class="relative bg-slate-50 py-24 sm:py-32 overflow-hidden border-b border-gray-100">
+            <!-- Subtle Radial Glow Accents -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-100/60 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-1/2 -right-24 w-96 h-96 bg-rose-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 bg-white border border-gray-200 px-3.5 py-1.5 rounded-full shadow-sm mb-6">
+                    <span class="w-2 h-2 rounded-full bg-brandRed animate-pulse"></span>
+                    <span class="text-brandNavy text-xs font-semibold uppercase tracking-wider">Inmobiliaria en La Paz, Córdoba</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl font-extrabold text-brandNavy mb-6 tracking-tight leading-tight">
+                    Encuentra tu lugar en <span class="text-brandBlue">La Paz</span>
+                </h1>
+                <p class="mt-4 text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Casas y terrenos en Traslasierra. Selección exclusiva con atención directa y personalizada.
+                </p>
+
+                <!-- Quick Search Bar -->
+                <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-xl p-3 flex flex-col sm:flex-row border border-gray-100 ring-1 ring-black/5">
+                    <div class="flex-1 flex items-center px-4 border-b sm:border-b-0 sm:border-r border-gray-100 py-2 sm:py-0">
+                        <i class="fa-solid fa-location-dot text-brandBlue mr-3"></i>
+                        <input type="text" placeholder="Ubicación (ej. La Paz, San Javier)" class="w-full focus:outline-none text-gray-700 placeholder-gray-400 text-sm">
+                    </div>
+                    <div class="flex-1 flex items-center px-4 py-2 sm:py-0">
+                        <i class="fa-solid fa-house text-brandBlue mr-3"></i>
+                        <select class="w-full focus:outline-none bg-white text-gray-700 text-sm">
+                            <option value="">Tipo de Propiedad</option>
+                            <option value="casa">Casa</option>
+                            <option value="terreno">Terreno</option>
+                        </select>
+                    </div>
+                    <button onclick="window.location.href='propiedades.html'" class="bg-brandRed text-white px-8 py-3.5 rounded-lg font-bold hover:bg-brandRedHover transition-all duration-200 w-full sm:w-auto shadow-md shadow-rose-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Proposition -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brandBlue/30 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-brandBlue text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-house-circle-check"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brandNavy mb-2">Propiedades Seleccionadas</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Catálogo curado de casas y terrenos con títulos y servicios al día.</p>
+                    </div>
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brandRed/30 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-brandRed text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brandNavy mb-2">Búsqueda Instantánea</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Navegación ultra fluida sin tiempos de espera para consultar detalles.</p>
+                    </div>
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brandBlue/30 transition-all duration-300 group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-brandBlue text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-handshake-angle"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brandNavy mb-2">Trato Directo</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Acompañamiento local en Traslasierra desde la primera consulta hasta la firma.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

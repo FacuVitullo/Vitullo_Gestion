@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto | Vitullo Gestión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brandNavy: '#0f172a',
+                        brandBlue: '#2563eb',
+                        brandBlueHover: '#1d4ed8',
+                        brandRed: '#e11d48',
+                        brandRedHover: '#be123c',
+                        brandLight: '#f8fafc'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');</style>
+</head>
+<body class="bg-slate-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- IDENTICAL NAVIGATION -->
+    <nav class="bg-white shadow-sm border-b border-gray-100 w-full z-50 sticky top-0">
+        <div class="h-1 w-full bg-gradient-to-r from-brandBlue via-brandNavy to-brandRed"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="text-2xl font-bold tracking-tight text-brandNavy flex items-center">
+                        Vitullo<span class="text-brandBlue ml-1">Gestión</span><span class="text-brandRed text-3xl leading-none">.</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-brandBlue font-medium transition-colors">Inicio</a>
+                    <a href="propiedades.html" class="text-gray-600 hover:text-brandBlue font-medium transition-colors">Propiedades</a>
+                    <a href="contact.html" class="bg-brandBlue text-white px-6 py-2.5 rounded-lg hover:bg-brandBlueHover transition-colors font-semibold shadow-sm border-r-2 border-brandRed">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- END IDENTICAL NAVIGATION -->
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                
+                <!-- Contact Information Column -->
+                <div class="bg-brandNavy text-white p-10 lg:p-14 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-brandBlue/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <div class="relative z-10">
+                        <span class="text-brandRed text-xs font-bold uppercase tracking-widest">Contacto Directo</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-4">Hablemos hoy</h2>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-10">¿Buscas vender tu propiedad o encontrar terrenos en La Paz? Completa el formulario o contáctanos directamente por WhatsApp o redes sociales.</p>
+                        
+                        <div class="space-y-6">
+                            <!-- Location -->
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mr-4 flex-shrink-0 text-brandRed">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-white">Oficina</h4>
+                                    <p class="text-slate-300 text-xs mt-0.5">Belgrano, San Javier, Córdoba, Argentina</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Phone / WhatsApp Clickable Link -->
+                            <a href="https://wa.me/543544509940" target="_blank" rel="noopener noreferrer" class="flex items-start group transition-colors">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mr-4 flex-shrink-0 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-white group-hover:text-emerald-400 transition-colors">Teléfono / WhatsApp</h4>
+                                    <p class="text-slate-300 text-xs mt-0.5 group-hover:underline">+54 3544 509940</p>
+                                </div>
+                            </a>
+
+                            <!-- Instagram Clickable Link -->
+                            <a href="https://www.instagram.com/vitullogestion/" target="_blank" rel="noopener noreferrer" class="flex items-start group transition-colors">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mr-4 flex-shrink-0 text-brandRed group-hover:bg-brandRed group-hover:text-white transition-all">
+                                    <i class="fa-brands fa-instagram text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-white group-hover:text-brandRed transition-colors">Instagram</h4>
+                                    <p class="text-slate-300 text-xs mt-0.5 group-hover:underline">@vitullogestion</p>
+                                </div>
+                            </a>
+                            
+                            <!-- Email Link -->
+                            <a href="mailto:vitullogestion@gmail.com" class="flex items-start group transition-colors">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mr-4 flex-shrink-0 text-brandBlue group-hover:bg-brandBlue group-hover:text-white transition-all">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-white group-hover:text-brandBlue transition-colors">Email</h4>
+                                    <p class="text-slate-300 text-xs mt-0.5 group-hover:underline">vitullogestion@gmail.com</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Bar Links -->
+                    <div class="mt-12 flex space-x-3 pt-6 border-t border-slate-800 relative z-10">
+                        <a href="https://wa.me/543544509940" target="_blank" rel="noopener noreferrer" title="WhatsApp" class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-colors">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/vitullogestion/" target="_blank" rel="noopener noreferrer" title="Instagram" class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-brandRed hover:text-white hover:border-brandRed transition-colors">
+                            <i class="fa-brands fa-instagram text-lg"></i>
+                        </a>
+                        <a href="https://www.argenprop.com/inmobiliarias/vitullo-gestion-inmobiliaria/inmuebles" target="_blank" rel="noopener noreferrer" title="Argenprop" class="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-brandBlue hover:text-white hover:border-brandBlue transition-colors">
+                            <i class="fa-solid fa-globe text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Web3Forms Form -->
+                <div class="p-10 lg:p-14">
+                    <h3 class="text-2xl font-bold text-brandNavy mb-6">Envíanos una Consulta</h3>
+                    
+                    <form action="https://api.web3forms.com/submit" method="POST" class="space-y-5">
+                        <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                        
+                        <div>
+                            <label for="name" class="block text-xs font-semibold text-gray-700 mb-1">Nombre Completo</label>
+                            <input type="text" name="name" id="name" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 bg-slate-50 focus:bg-white text-sm transition-colors">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="email" class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
+                                <input type="email" name="email" id="email" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 bg-slate-50 focus:bg-white text-sm transition-colors">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-xs font-semibold text-gray-700 mb-1">Teléfono</label>
+                                <input type="tel" name="phone" id="phone" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 bg-slate-50 focus:bg-white text-sm transition-colors">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-xs font-semibold text-gray-700 mb-1">Mensaje</label>
+                            <textarea name="message" id="message" rows="4" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 bg-slate-50 focus:bg-white text-sm transition-colors" placeholder="¿Qué tipo de propiedad buscas?"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-brandRed text-white font-bold py-3.5 px-6 rounded-lg hover:bg-brandRedHover transition-all duration-200 shadow-md shadow-rose-500/20">
+                            Enviar Consulta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

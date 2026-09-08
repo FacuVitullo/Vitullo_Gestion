@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propiedades | Vitullo Gestión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        brandNavy: '#0f172a',
+                        brandBlue: '#2563eb',
+                        brandBlueHover: '#1d4ed8',
+                        brandRed: '#e11d48',
+                        brandRedHover: '#be123c',
+                        brandLight: '#f8fafc'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');</style>
+</head>
+<body class="bg-slate-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-sm border-b border-gray-100 w-full z-40 sticky top-0">
+        <div class="h-1 w-full bg-gradient-to-r from-brandBlue via-brandNavy to-brandRed"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="text-2xl font-bold tracking-tight text-brandNavy flex items-center">
+                        Vitullo<span class="text-brandBlue ml-1">Gestión</span><span class="text-brandRed text-3xl leading-none">.</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-brandBlue font-medium transition-colors">Inicio</a>
+                    <a href="propiedades.html" class="text-brandBlue font-semibold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-brandRed">Propiedades</a>
+                    <a href="contact.html" class="bg-brandBlue text-white px-6 py-2.5 rounded-lg hover:bg-brandBlueHover transition-colors font-semibold shadow-sm border-r-2 border-brandRed">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- OWNER STATUS BANNER -->
+    <div id="ownerBanner" class="hidden bg-brandNavy text-white py-2.5 px-4 shadow-inner z-30">
+        <div class="max-w-7xl mx-auto flex justify-between items-center text-xs font-semibold">
+            <span class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                Modo Propietario Activo — Conectado como <span id="ownerEmailDisplay" class="text-brandBlue font-bold underline"></span>
+            </span>
+            <div class="flex items-center gap-3">
+                <button onclick="openDashboard()" class="bg-brandBlue hover:bg-brandBlueHover text-white px-3 py-1 rounded-md transition-colors shadow-sm">
+                    <i class="fa-solid fa-sliders mr-1"></i> Panel Admin
+                </button>
+                <button onclick="logoutOwner()" class="text-slate-300 hover:text-white underline ml-2">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-gray-200 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-brandNavy">Catálogo Inmobiliario</h1>
+                <p class="text-gray-500 text-sm mt-1">Haz clic en cualquier propiedad para ver detalles completos y galería.</p>
+            </div>
+            
+            <div class="flex flex-wrap p-1 bg-white border border-gray-200 rounded-xl shadow-sm gap-1">
+                <button onclick="filterProperties('todos')" id="filter-todos" class="filter-btn bg-brandNavy text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all">Todas</button>
+                <button onclick="filterProperties('casa')" id="filter-casa" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Casas</button>
+                <button onclick="filterProperties('terreno')" id="filter-terreno" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Terrenos</button>
+                <button onclick="filterProperties('Venta')" id="filter-Venta" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Venta</button>
+                <button onclick="filterProperties('Alquiler')" id="filter-Alquiler" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Alquiler</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="propertyGrid">
+            <div class="col-span-full text-center py-20">
+                <i class="fa-solid fa-circle-notch animate-spin text-3xl text-brandBlue mb-3"></i>
+                <p class="text-gray-500 text-sm">Cargando propiedades desde Firebase...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- PROPERTY DETAIL MODAL -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center backdrop-blur-md p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl p-6 md:p-8 relative my-auto max-h-[90vh] overflow-y-auto border border-gray-100">
+            <button onclick="closeDetailModal()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 text-gray-500 hover:bg-brandRed hover:text-white flex items-center justify-center transition-colors z-10">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="detailContent" class="space-y-6"></div>
+        </div>
+    </div>
+
+    <!-- OWNER LOGIN TRIGGER -->
+    <button id="loginTriggerBtn" onclick="toggleLoginModal()" class="fixed bottom-6 right-6 bg-brandNavy text-white p-3.5 rounded-full shadow-2xl hover:bg-brandBlue transition-colors z-40 border-2 border-white/20 flex items-center justify-center" title="Acceso Propietario">
+        <i class="fa-solid fa-lock text-sm"></i>
+    </button>
+
+    <!-- OWNER LOGIN MODAL -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative border-t-4 border-brandRed">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h2 class="text-2xl font-extrabold text-brandNavy mb-1">Panel Propietario</h2>
+            <p class="text-gray-500 text-xs mb-6">Autenticación segura vía Firebase.</p>
+            <form onsubmit="attemptLogin(event)" class="space-y-4">
+                <input type="email" id="ownerEmail" required placeholder="Correo Electrónico" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 text-sm">
+                <input type="password" id="ownerPass" required placeholder="Contraseña" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandBlue/30 text-sm">
+                <button type="submit" id="loginSubmitBtn" class="w-full bg-brandNavy text-white py-2.5 rounded-lg hover:bg-brandBlue font-bold transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <span>Ingresar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- OWNER ADMIN DASHBOARD MODAL -->
+    <div id="dashboardModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-6 md:p-8 relative my-auto border-t-4 border-brandBlue max-h-[90vh] overflow-y-auto">
+            <button onclick="closeDashboard()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <h2 class="text-2xl font-extrabold text-brandNavy mb-1">Panel de Administración</h2>
+            <p class="text-gray-500 text-sm mb-6">Gestiona tus publicaciones e imágenes de Cloudinary en tiempo real.</p>
+
+            <div class="flex border-b border-gray-200 mb-6 gap-4">
+                <button onclick="switchTab('add')" id="tab-add" class="pb-3 text-sm font-bold border-b-2 border-brandBlue text-brandBlue transition-colors">
+                    <i class="fa-solid fa-plus-circle mr-1"></i> Cargar Propiedad
+                </button>
+                <button onclick="switchTab('manage')" id="tab-manage" class="pb-3 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-brandNavy transition-colors">
+                    <i class="fa-solid fa-list-check mr-1"></i> Gestionar Propiedades (<span id="propCount">0</span>)
+                </button>
+            </div>
+            
+            <!-- TAB 1: ADD PROPERTY FORM -->
+            <div id="tabContentAdd">
+                <form id="addPropertyForm" onsubmit="handleNewProperty(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Título</label>
+                        <input type="text" id="newTitle" required placeholder="Ej. Casa Serrana La Paz" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Tipo de Inmueble</label>
+                        <select id="newType" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                            <option value="casa">Casa</option>
+                            <option value="terreno">Terreno</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Operación</label>
+                        <select id="newOperation" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                            <option value="Venta">Venta</option>
+                            <option value="Alquiler">Alquiler</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Precio (USD / ARS)</label>
+                        <input type="text" id="newPrice" required placeholder="Ej. USD 85,000 o $450.000/mes" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Ubicación / Dirección</label>
+                        <input type="text" id="newLocation" required placeholder="La Paz, San Javier" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Metros Cuadrados (m²)</label>
+                        <input type="number" id="newSqm" placeholder="Ej. 150" min="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Antigüedad</label>
+                        <input type="text" id="newAge" placeholder="Ej. A estrenar, 5 años, etc." class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Habitaciones</label>
+                            <input type="number" id="newBeds" value="0" min="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Baños</label>
+                            <input type="number" id="newBaths" value="0" min="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm">
+                        </div>
+                    </div>
+
+                    <!-- DRAG AND DROP ZONE -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Fotos de la Propiedad (Alojadas en Cloudinary)</label>
+                        <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-gray-300 hover:border-brandBlue rounded-2xl p-6 text-center bg-slate-50 hover:bg-blue-50/50 transition-colors cursor-pointer group">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 group-hover:text-brandBlue transition-colors mb-2"></i>
+                            <p class="text-sm font-semibold text-gray-600">Arrastra las fotos aquí o <span class="text-brandBlue underline">haz clic para explorar</span></p>
+                            <p class="text-xs text-gray-400 mt-1">Soporta JPG, PNG, WEBP</p>
+                            <input type="file" id="fileInput" multiple accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+                        </div>
+
+                        <!-- Image Previews -->
+                        <div id="imagePreviewContainer" class="flex flex-wrap gap-3 mt-3"></div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Reseña / Descripción General</label>
+                        <textarea id="newDesc" rows="3" required placeholder="Detalles de la propiedad..." class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm"></textarea>
+                    </div>
+
+                    <div class="md:col-span-2 mt-2">
+                        <button type="submit" id="submitPropBtn" class="w-full bg-brandRed text-white py-3 rounded-lg hover:bg-brandRedHover font-bold transition-colors shadow-md flex items-center justify-center gap-2">
+                            <span>Publicar Inmueble</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB 2: MANAGE PROPERTIES -->
+            <div id="tabContentManage" class="hidden">
+                <div id="ownerPropertyList" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION SCRIPT MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            deleteDoc, 
+            doc, 
+            onSnapshot, 
+            query, 
+            orderBy, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // =========================================================================
+        // 1. CONFIGURATION KEYS (REPLACE WITH YOUR KEYS)
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe8ee8Cxg6_cdE7ZnT4XAMMJdstLfIs7w",
+            authDomain: "vitullo-gestion.firebaseapp.com",
+            projectId: "vitullo-gestion",
+            storageBucket: "vitullo-gestion.firebasestorage.app",
+            messagingSenderId: "378245642482",
+            appId: "1:378245642482:web:2b7248313d096b5bd3f86b"
+        };
+
+        const CLOUDINARY_CLOUD_NAME = "v8hawh7g";
+        const CLOUDINARY_UPLOAD_PRESET = "vitullo_preset";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Application State Variables
+        let properties = [];
+        let selectedFiles = [];
+        let currentUser = null;
+        let activeCategory = 'todos';
+
+        // =========================================================================
+        // 2. REALTIME FIRESTORE DATABASE LISTENER
+        // =========================================================================
+        const propertiesRef = collection(db, "properties");
+        const q = query(propertiesRef, orderBy("createdAt", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            properties = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            renderGrid();
+            renderOwnerPropertyList();
+        }, (error) => {
+            console.error("Firestore error:", error);
+            document.getElementById('propertyGrid').innerHTML = `
+                <div class="col-span-full text-center py-12 text-rose-500 font-semibold">
+                    Error de conexión con Firebase. Verifica tus credenciales en el código.
+                </div>
+            `;
+        });
+
+        // =========================================================================
+        // 3. AUTHENTICATION LISTENER
+        // =========================================================================
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('ownerBanner').classList.remove('hidden');
+                document.getElementById('loginTriggerBtn').classList.add('hidden');
+                document.getElementById('ownerEmailDisplay').textContent = user.email;
+            } else {
+                document.getElementById('ownerBanner').classList.add('hidden');
+                document.getElementById('loginTriggerBtn').classList.remove('hidden');
+            }
+            renderGrid();
+        });
+
+        // =========================================================================
+        // 4. UI RENDER FUNCTIONS
+        // =========================================================================
+        function renderGrid(items = properties) {
+            const grid = document.getElementById('propertyGrid');
+            
+            // Filter logic supports type (casa/terreno) or operation (Venta/Alquiler)
+            const filtered = activeCategory === 'todos' 
+                ? items 
+                : items.filter(p => p.type === activeCategory || p.operation === activeCategory);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+                        <i class="fa-solid fa-house-chimney-crack text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 font-semibold">No hay propiedades publicadas en esta categoría.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const coverImage = (p.images && p.images.length > 0) ? p.images[0].url : 'https://via.placeholder.com/600x400';
+                const isAlquiler = p.operation === 'Alquiler';
+
+                return `
+                <div onclick="window.openDetailModal('${p.id}')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative">
+                    <div class="h-60 bg-gray-200 relative overflow-hidden">
+                        <img src="${coverImage}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        
+                        <!-- BADGES -->
+                        <div class="absolute top-4 left-4 flex gap-1.5 z-10">
+                            <span class="bg-brandRed text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
+                                ${p.type === 'casa' ? 'Casa' : 'Terreno'}
+                            </span>
+                            <span class="${isAlquiler ? 'bg-emerald-600' : 'bg-brandNavy'} text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
+                                ${p.operation || 'Venta'}
+                            </span>
+                        </div>
+
+                        ${currentUser ? `
+                            <button onclick="window.deleteProperty('${p.id}', event)" class="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white w-9 h-9 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 z-10" title="Eliminar Propiedad">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-brandNavy group-hover:text-brandBlue transition-colors mb-2">${p.title}</h3>
+                        <p class="text-brandBlue font-extrabold text-2xl mb-4">${p.price}</p>
+                        <p class="text-gray-500 text-sm mb-6 flex items-center">
+                            <i class="fa-solid fa-location-dot text-brandRed mr-2"></i> ${p.location}
+                        </p>
+                        <div class="flex justify-between items-center text-gray-500 text-sm border-t border-gray-100 pt-4">
+                            <div class="flex space-x-3 text-xs">
+                                ${p.sqm ? `<span title="Superficie"><i class="fa-solid fa-ruler-combined text-brandBlue mr-1"></i> ${p.sqm} m²</span>` : ''}
+                                ${p.beds ? `<span title="Habitaciones"><i class="fa-solid fa-bed text-brandBlue mr-1"></i> ${p.beds}</span>` : ''}
+                                ${p.baths ? `<span title="Baños"><i class="fa-solid fa-bath text-brandBlue mr-1"></i> ${p.baths}</span>` : ''}
+                            </div>
+                            <span class="text-brandBlue font-bold text-xs uppercase tracking-wider flex items-center gap-1 bg-blue-50 px-2.5 py-1.5 rounded-md">
+                                Ver Detalle <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderOwnerPropertyList() {
+            document.getElementById('propCount').textContent = properties.length;
+            const container = document.getElementById('ownerPropertyList');
+            
+            if (properties.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-center py-6 text-sm">No hay publicaciones activas.</p>`;
+                return;
+            }
+
+            container.innerHTML = properties.map(p => {
+                const coverImage = (p.images && p.images.length > 0) ? p.images[0].url : 'https://via.placeholder.com/100';
+                return `
+                <div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-gray-200/80 hover:bg-white transition-colors">
+                    <div class="flex items-center space-x-4">
+                        <img src="${coverImage}" class="w-14 h-12 rounded-lg object-cover">
+                        <div>
+                            <h4 class="font-bold text-brandNavy text-sm line-clamp-1">${p.title}</h4>
+                            <p class="text-xs text-gray-500">${p.location} • <span class="text-brandBlue font-semibold">${p.price}</span> (${p.operation || 'Venta'})</p>
+                        </div>
+                    </div>
+                    <button onclick="window.deleteProperty('${p.id}')" class="bg-rose-50 hover:bg-rose-100 text-brandRed border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-trash-can"></i> Eliminar
+                    </button>
+                </div>
+            `}).join('');
+        }
+
+        // =========================================================================
+        // 5. DRAG & DROP FILE SELECTION
+        // =========================================================================
+        const dropZone = document.getElementById('dropZone');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('border-brandBlue', 'bg-blue-50/50'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-brandBlue', 'bg-blue-50/50'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            processFiles(e.dataTransfer.files);
+        }, false);
+
+        window.handleFileSelect = function(e) {
+            processFiles(e.target.files);
+        };
+
+        function processFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                selectedFiles.push(file);
+            });
+            renderImagePreviews();
+        }
+
+        function renderImagePreviews() {
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = selectedFiles.map((file, idx) => `
+                <div class="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-200 group">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
+                    <button type="button" onclick="window.removePreviewImage(${idx})" class="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-90 hover:opacity-100">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.removePreviewImage = function(index) {
+            selectedFiles.splice(index, 1);
+            renderImagePreviews();
+        };
+
+        // =========================================================================
+        // 6. ADD PROPERTY (CLOUDINARY API + FIRESTORE)
+        // =========================================================================
+        window.handleNewProperty = async function(e) {
+            e.preventDefault();
+            if (!currentUser) return alert('Debes estar autenticado para realizar esta acción.');
+
+            if (CLOUDINARY_CLOUD_NAME === "YOUR_CLOUDINARY_CLOUD_NAME") {
+                alert("Por favor reemplaza las claves de Cloudinary en el archivo HTML.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitPropBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-lg"></i> Subiendo imágenes a Cloudinary...`;
+
+            try {
+                const uploadedImages = [];
+
+                // Upload images to Cloudinary via REST API
+                for (let file of selectedFiles) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.error?.message || "Error al subir imagen");
+                    }
+
+                    const data = await res.json();
+                    uploadedImages.push({
+                        url: data.secure_url,
+                        public_id: data.public_id
+                    });
+                }
+
+                // Default placeholder if no image attached
+                if (uploadedImages.length === 0) {
+                    uploadedImages.push({
+                        url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+                        public_id: ''
+                    });
+                }
+
+                // Save property details to Firebase Firestore
+                await addDoc(collection(db, "properties"), {
+                    title: document.getElementById('newTitle').value,
+                    type: document.getElementById('newType').value,
+                    operation: document.getElementById('newOperation').value,
+                    price: document.getElementById('newPrice').value,
+                    location: document.getElementById('newLocation').value,
+                    sqm: parseInt(document.getElementById('newSqm').value) || 0,
+                    age: document.getElementById('newAge').value || 'Sin especificar',
+                    beds: parseInt(document.getElementById('newBeds').value) || 0,
+                    baths: parseInt(document.getElementById('newBaths').value) || 0,
+                    description: document.getElementById('newDesc').value,
+                    images: uploadedImages,
+                    createdAt: serverTimestamp()
+                });
+
+                // Reset form & close modal
+                document.getElementById('addPropertyForm').reset();
+                selectedFiles = [];
+                document.getElementById('imagePreviewContainer').innerHTML = '';
+                closeDashboard();
+                alert('¡Propiedad publicada con éxito!');
+
+            } catch (error) {
+                console.error("Error creating property:", error);
+                alert("Error al guardar la propiedad: " + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Publicar Inmueble</span>`;
+            }
+        };
+
+        // =========================================================================
+        // 7. DELETE PROPERTY FROM FIRESTORE
+        // =========================================================================
+        window.deleteProperty = async function(id, event) {
+            if (event) event.stopPropagation();
+
+            if (!currentUser) {
+                alert("Permiso denegado.");
+                return;
+            }
+
+            const propToDelete = properties.find(p => p.id === id);
+            if (!propToDelete) return;
+
+            if (confirm(`¿Estás seguro de que deseas eliminar permanentemente "${propToDelete.title}"?`)) {
+                try {
+                    await deleteDoc(doc(db, "properties", id));
+                    alert('Propiedad eliminada del catálogo.');
+                } catch (error) {
+                    console.error("Error removing property:", error);
+                    alert("Error al eliminar la propiedad: " + error.message);
+                }
+            }
+        };
+
+        // =========================================================================
+        // 8. AUTHENTICATION HANDLERS
+        // =========================================================================
+        window.attemptLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('ownerEmail').value;
+            const pass = document.getElementById('ownerPass').value;
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Validando...`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.toggleLoginModal();
+                document.getElementById('ownerEmail').value = '';
+                document.getElementById('ownerPass').value = '';
+                window.openDashboard();
+            } catch (error) {
+                alert("Error de autenticación: Credenciales inválidas.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Ingresar</span>`;
+            }
+        };
+
+        window.logoutOwner = async function() {
+            await signOut(auth);
+            window.closeDashboard();
+        };
+
+        // =========================================================================
+        // 9. MODALS & TAB CONTROLLERS
+        // =========================================================================
+        window.openDetailModal = function(id) {
+            const p = properties.find(item => item.id === id);
+            if (!p) return;
+
+            const coverImg = (p.images && p.images.length > 0) ? p.images[0].url : 'https://via.placeholder.com/800x600';
+            const content = document.getElementById('detailContent');
+
+            content.innerHTML = `
+                <div>
+                    <div class="flex gap-2 mb-2">
+                        <span class="inline-block bg-blue-100 text-brandBlue text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">${p.type}</span>
+                        <span class="inline-block bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">${p.operation || 'Venta'}</span>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-brandNavy">${p.title}</h2>
+                    <p class="text-gray-500 text-sm mt-1 flex items-center">
+                        <i class="fa-solid fa-location-dot text-brandRed mr-2"></i> ${p.location}
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="h-80 sm:h-96 rounded-2xl overflow-hidden bg-gray-100 shadow-inner">
+                        <img id="mainDetailImage" src="${coverImg}" class="w-full h-full object-cover">
+                    </div>
+                    ${(p.images && p.images.length > 1) ? `
+                        <div class="flex space-x-3 overflow-x-auto pb-2">
+                            ${p.images.map((img) => `
+                                <img src="${img.url}" onclick="document.getElementById('mainDetailImage').src = '${img.url}'" class="w-24 h-20 object-cover rounded-xl cursor-pointer hover:opacity-80 border-2 border-transparent hover:border-brandBlue transition-all flex-shrink-0">
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-gray-100">
+                    <div class="md:col-span-2 space-y-4">
+                        <h4 class="font-bold text-brandNavy text-lg">Reseña & Características</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">${p.description}</p>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 bg-slate-50 rounded-xl px-4 border border-slate-100">
+                            <div class="text-center">
+                                <span class="block text-xs text-gray-400 uppercase font-semibold">Superficie</span>
+                                <span class="text-sm font-bold text-brandNavy">${p.sqm ? p.sqm + ' m²' : 'N/A'}</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-xs text-gray-400 uppercase font-semibold">Antigüedad</span>
+                                <span class="text-sm font-bold text-brandNavy">${p.age || 'N/A'}</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-xs text-gray-400 uppercase font-semibold">Habitaciones</span>
+                                <span class="text-sm font-bold text-brandNavy">${p.beds || 0}</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-xs text-gray-400 uppercase font-semibold">Baños</span>
+                                <span class="text-sm font-bold text-brandNavy">${p.baths || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200/60 flex flex-col justify-between h-full">
+                        <div>
+                            <span class="text-xs font-semibold text-gray-400 uppercase">Precio (${p.operation || 'Venta'})</span>
+                            <div class="text-3xl font-extrabold text-brandBlue mt-1">${p.price}</div>
+                        </div>
+
+                        <div class="space-y-3 mt-6">
+                            <a href="https://wa.me/543544509940?text=${encodeURIComponent('Hola Vitullo Gestión, quisiera consultar por la propiedad en ' + (p.operation || 'Venta') + ': ' + p.title)}" target="_blank" class="w-full bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-md">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Consultar por WhatsApp
+                            </a>
+                            <a href="contact.html" class="w-full bg-brandNavy text-white font-semibold py-3 px-4 rounded-xl hover:bg-brandBlue transition-colors flex items-center justify-center text-sm">
+                                Formulario de Contacto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        };
+
+        window.closeDetailModal = function() {
+            document.getElementById('detailModal').classList.add('hidden');
+        };
+
+        window.filterProperties = function(category) {
+            activeCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all';
+            });
+            const activeBtn = document.getElementById(`filter-${category}`);
+            if (activeBtn) {
+                activeBtn.className = 'filter-btn bg-brandNavy text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all';
+            }
+            renderGrid();
+        };
+
+        window.toggleLoginModal = function() {
+            document.getElementById('loginModal').classList.toggle('hidden');
+        };
+
+        window.openDashboard = function() {
+            renderOwnerPropertyList();
+            document.getElementById('dashboardModal').classList.remove('hidden');
+        };
+
+        window.closeDashboard = function() {
+            document.getElementById('dashboardModal').classList.add('hidden');
+        };
+
+        window.switchTab = function(tab) {
+            const tabAdd = document.getElementById('tab-add');
+            const tabManage = document.getElementById('tab-manage');
+            const contentAdd = document.getElementById('tabContentAdd');
+            const contentManage = document.getElementById('tabContentManage');
+
+            if (tab === 'add') {
+                tabAdd.className = 'pb-3 text-sm font-bold border-b-2 border-brandBlue text-brandBlue transition-colors';
+                tabManage.className = 'pb-3 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-brandNavy transition-colors';
+                contentAdd.classList.remove('hidden');
+                contentManage.classList.add('hidden');
+            } else {
+                tabManage.className = 'pb-3 text-sm font-bold border-b-2 border-brandBlue text-brandBlue transition-colors';
+                tabAdd.className = 'pb-3 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-brandNavy transition-colors';
+                contentManage.classList.remove('hidden');
+                contentAdd.classList.add('hidden');
+                renderOwnerPropertyList();
+            }
+        };
+    </script>
+</body>
+</html>
