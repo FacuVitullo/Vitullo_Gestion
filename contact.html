@@ -19,12 +19,12 @@
                         brandRedHover: '#be123c',
                         brandLight: '#f8fafc'
                     },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Fraunces', 'serif'] }
                 }
             }
         }
     </script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');</style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap');</style>
 </head>
 <body class="bg-slate-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
@@ -58,8 +58,8 @@
                     
                     <div class="relative z-10">
                         <span class="text-brandRed text-xs font-bold uppercase tracking-widest">Contacto Directo</span>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-4">Hablemos hoy</h2>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-10">¿Buscas vender tu propiedad o encontrar terrenos en La Paz? Completa el formulario o contáctanos directamente por WhatsApp o redes sociales.</p>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold mt-2 mb-4">Hablemos hoy</h2>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-10">¿Buscás vender tu propiedad o encontrar terrenos en La Paz? Completá el formulario o escribinos directo por WhatsApp o redes.</p>
                         
                         <div class="space-y-6">
                             <!-- Location -->
@@ -124,7 +124,7 @@
 
                 <!-- Web3Forms Form -->
                 <div class="p-10 lg:p-14">
-                    <h3 class="text-2xl font-bold text-brandNavy mb-6">Envíanos una Consulta</h3>
+                    <h3 class="font-serif text-2xl font-bold text-brandNavy mb-6">Enviános una Consulta</h3>
                     
                     <form action="https://api.web3forms.com/submit" method="POST" class="space-y-5">
                         <input type="hidden" name="access_key" value="e2edd112-03d6-48cd-9bf4-de8100da04bc">
@@ -159,6 +159,43 @@
             </div>
         </div>
     </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brandNavy text-slate-300">
+        <div class="h-1 w-full bg-gradient-to-r from-brandBlue via-brandNavy to-brandRed"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div>
+                    <div class="bg-white inline-block rounded-lg px-3 py-2 mb-4">
+                        <img src="assets/logo.jpg" alt="Vitullo Gestión Inmobiliaria" class="h-9 w-auto">
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">Especialistas en inversiones inmobiliarias en Traslasierra. Casas, terrenos y campos en La Paz, Córdoba, con atención directa y personalizada.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Navegación</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                        <li><a href="propiedades.html" class="hover:text-white transition-colors">Propiedades</a></li>
+                        <li><a href="contact.html" class="hover:text-white transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Contacto</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-brandRed mt-1"></i> Belgrano, San Javier, Córdoba, Argentina</li>
+                        <li><a href="https://wa.me/543544509940" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +54 3544 509940</a></li>
+                        <li><a href="https://www.instagram.com/vitullogestion/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-brandRed transition-colors"><i class="fa-brands fa-instagram"></i> @vitullogestion</a></li>
+                        <li><a href="mailto:vitullogestion@gmail.com" class="flex items-center gap-2 hover:text-brandBlue transition-colors"><i class="fa-solid fa-envelope"></i> vitullogestion@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                <p>&copy; <span id="footerYear"></span> Vitullo Gestión Inmobiliaria. Todos los derechos reservados.</p>
+                <p>La Paz · Traslasierra · Córdoba, Argentina</p>
+            </div>
+        </div>
+    </footer>
+    <script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
 
 </body>
 </html>

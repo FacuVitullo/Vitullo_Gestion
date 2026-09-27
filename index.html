@@ -19,12 +19,12 @@
                         brandRedHover: '#be123c',
                         brandLight: '#f8fafc'
                     },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Fraunces', 'serif'] }
                 }
             }
         }
     </script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');</style>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap');</style>
 </head>
 <body class="bg-white text-gray-800 font-sans antialiased flex flex-col min-h-screen">
 
@@ -61,8 +61,8 @@
                     <span class="text-brandNavy text-xs font-semibold uppercase tracking-wider">Inmobiliaria en La Paz, Córdoba</span>
                 </div>
 
-                <h1 class="text-4xl sm:text-6xl font-extrabold text-brandNavy mb-6 tracking-tight leading-tight">
-                    Encuentra tu lugar en <span class="text-brandBlue">La Paz</span>
+                <h1 class="font-serif text-4xl sm:text-6xl font-bold text-brandNavy mb-6 tracking-tight leading-tight">
+                    Encontrá tu lugar en <span class="text-brandBlue">La Paz</span>
                 </h1>
                 <p class="mt-4 text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
                     Casas y terrenos en Traslasierra. Selección exclusiva con atención directa y personalizada.
@@ -102,10 +102,10 @@
                     </div>
                     <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brandRed/30 transition-all duration-300 group">
                         <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-brandRed text-2xl mb-6 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-bolt"></i>
+                            <i class="fa-solid fa-mountain-sun"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-brandNavy mb-2">Búsqueda Instantánea</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Navegación ultra fluida sin tiempos de espera para consultar detalles.</p>
+                        <h3 class="text-xl font-bold text-brandNavy mb-2">Conocemos el Terreno</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">Cada rincón de Traslasierra, de memoria: accesos, entorno y detalles que no se ven en las fotos.</p>
                     </div>
                     <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brandBlue/30 transition-all duration-300 group">
                         <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-brandBlue text-2xl mb-6 group-hover:scale-110 transition-transform">
@@ -118,6 +118,43 @@
             </div>
         </section>
     </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brandNavy text-slate-300">
+        <div class="h-1 w-full bg-gradient-to-r from-brandBlue via-brandNavy to-brandRed"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div>
+                    <div class="bg-white inline-block rounded-lg px-3 py-2 mb-4">
+                        <img src="assets/logo.jpg" alt="Vitullo Gestión Inmobiliaria" class="h-9 w-auto">
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">Especialistas en inversiones inmobiliarias en Traslasierra. Casas, terrenos y campos en La Paz, Córdoba, con atención directa y personalizada.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Navegación</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Inicio</a></li>
+                        <li><a href="propiedades.html" class="hover:text-white transition-colors">Propiedades</a></li>
+                        <li><a href="contact.html" class="hover:text-white transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Contacto</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-brandRed mt-1"></i> Belgrano, San Javier, Córdoba, Argentina</li>
+                        <li><a href="https://wa.me/543544509940" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +54 3544 509940</a></li>
+                        <li><a href="https://www.instagram.com/vitullogestion/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-brandRed transition-colors"><i class="fa-brands fa-instagram"></i> @vitullogestion</a></li>
+                        <li><a href="mailto:vitullogestion@gmail.com" class="flex items-center gap-2 hover:text-brandBlue transition-colors"><i class="fa-solid fa-envelope"></i> vitullogestion@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                <p>&copy; <span id="footerYear"></span> Vitullo Gestión Inmobiliaria. Todos los derechos reservados.</p>
+                <p>La Paz · Traslasierra · Córdoba, Argentina</p>
+            </div>
+        </div>
+    </footer>
+    <script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
 
     <script>
         function goToSearch() {
