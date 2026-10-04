@@ -13,8 +13,8 @@
                 extend: {
                     colors: { 
                         brandNavy: '#0f172a',
-                        brandBlue: '#2563eb',
-                        brandBlueHover: '#1d4ed8',
+                        brandBlue: '#1e40af',
+                        brandBlueHover: '#1e3a8a',
                         brandRed: '#e11d48',
                         brandRedHover: '#be123c',
                         brandLight: '#f8fafc'
@@ -25,8 +25,21 @@
         }
     </script>
     <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap');</style>
+    <style>
+        /* Fondo animado: 3 manchas con gradiente radial; solo se anima transform (GPU) */
+        .bg-anim { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .bg-anim span { position: absolute; border-radius: 50%; will-change: transform; }
+        .bg-anim span:nth-child(1) { width: 60vmax; height: 60vmax; top: -20vmax; left: -15vmax; background: radial-gradient(circle, rgba(30,64,175,.26) 0%, transparent 65%); animation: bgFloatA 38s ease-in-out infinite alternate; }
+        .bg-anim span:nth-child(2) { width: 50vmax; height: 50vmax; bottom: -18vmax; right: -12vmax; background: radial-gradient(circle, rgba(225,29,72,.15) 0%, transparent 65%); animation: bgFloatB 46s ease-in-out infinite alternate; }
+        .bg-anim span:nth-child(3) { width: 45vmax; height: 45vmax; top: 35%; left: 40%; background: radial-gradient(circle, rgba(15,23,42,.12) 0%, transparent 65%); animation: bgFloatC 52s ease-in-out infinite alternate; }
+        @keyframes bgFloatA { to { transform: translate3d(14vmax, 10vmax, 0) scale(1.1); } }
+        @keyframes bgFloatB { to { transform: translate3d(-12vmax, -8vmax, 0) scale(1.15); } }
+        @keyframes bgFloatC { to { transform: translate3d(-10vmax, 8vmax, 0) scale(.9); } }
+        @media (prefers-reduced-motion: reduce) { .bg-anim span { animation: none; } }
+    </style>
 </head>
 <body class="bg-slate-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+    <div class="bg-anim" aria-hidden="true"><span></span><span></span><span></span></div>
 
     <!-- IDENTICAL NAVIGATION -->
     <nav class="bg-white shadow-sm border-b border-gray-100 w-full z-50 sticky top-0">
@@ -81,6 +94,17 @@
                                 <div>
                                     <h4 class="font-semibold text-sm text-white group-hover:text-emerald-400 transition-colors">Teléfono / WhatsApp</h4>
                                     <p class="text-slate-300 text-xs mt-0.5 group-hover:underline">+54 3544 509940</p>
+                                </div>
+                            </a>
+
+                            <!-- Second Phone / WhatsApp Clickable Link -->
+                            <a href="https://wa.me/543515149150" target="_blank" rel="noopener noreferrer" class="flex items-start group transition-colors">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mr-4 flex-shrink-0 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-white group-hover:text-emerald-400 transition-colors">Teléfono / WhatsApp</h4>
+                                    <p class="text-slate-300 text-xs mt-0.5 group-hover:underline">+54 351 5149150</p>
                                 </div>
                             </a>
 
@@ -184,6 +208,7 @@
                     <ul class="space-y-3 text-sm">
                         <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-brandRed mt-1"></i> Belgrano, San Javier, Córdoba, Argentina</li>
                         <li><a href="https://wa.me/543544509940" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +54 3544 509940</a></li>
+                        <li><a href="https://wa.me/543515149150" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +54 351 5149150</a></li>
                         <li><a href="https://www.instagram.com/vitullogestion/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-brandRed transition-colors"><i class="fa-brands fa-instagram"></i> @vitullogestion</a></li>
                         <li><a href="mailto:vitullogestion@gmail.com" class="flex items-center gap-2 hover:text-brandBlue transition-colors"><i class="fa-solid fa-envelope"></i> vitullogestion@gmail.com</a></li>
                     </ul>
