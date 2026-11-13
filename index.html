@@ -169,6 +169,35 @@
             </div>
         </section>
 
+        <!-- Propiedades seleccionadas (las marca como "Destacada" el administrador desde el panel) -->
+        <section id="featuredSection" class="hidden py-20 bg-white/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+                    <div>
+                        <span class="text-brandRed text-xs font-bold uppercase tracking-widest">Selección de la inmobiliaria</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brandNavy mt-2">Propiedades seleccionadas</h2>
+                    </div>
+                    <a href="propiedades.html" class="text-brandBlue font-semibold text-sm hover:underline">Ver todo el catálogo <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <div id="featuredGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+
+        <!-- Posibilidades de inversión (las marca el administrador desde el panel) -->
+        <section id="investmentSection" class="hidden py-20 bg-slate-50/60 border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+                    <div>
+                        <span class="text-brandRed text-xs font-bold uppercase tracking-widest">Oportunidades en Traslasierra</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brandNavy mt-2">Posibilidades de inversión</h2>
+                        <p class="text-gray-600 text-sm mt-2 max-w-xl">Propiedades con potencial para poner a trabajar tu capital: loteos, complejos, campos y casas para renta.</p>
+                    </div>
+                    <a href="propiedades.html?tipo=inversion" class="text-brandBlue font-semibold text-sm hover:underline">Ver todas las posibilidades <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+                <div id="investmentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+
         <!-- Value Proposition -->
         <section class="py-20 bg-white/50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -258,6 +287,79 @@
         document.getElementById('searchLocation').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') goToSearch();
         });
+    </script>
+
+    <!-- Propiedades seleccionadas + posibilidades de inversión: se leen de Firestore (solo lectura pública) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyCe8ee8Cxg6_cdE7ZnT4XAMMJdstLfIs7w",
+            authDomain: "vitullo-gestion.firebaseapp.com",
+            projectId: "vitullo-gestion",
+            storageBucket: "vitullo-gestion.firebasestorage.app",
+            messagingSenderId: "378245642482",
+            appId: "1:378245642482:web:2b7248313d096b5bd3f86b"
+        });
+        const db = getFirestore(app);
+        const MAX_PER_SECTION = 6;
+
+        function escapeHtml(value) {
+            if (value === undefined || value === null) return '';
+            return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function cloudinaryThumb(url, transformation) {
+            if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+            return url.replace('/upload/', `/upload/${transformation}/`);
+        }
+
+        function createdMs(p) {
+            return p.createdAt && p.createdAt.toMillis ? p.createdAt.toMillis() : 0;
+        }
+
+        function typeLabel(type) {
+            return type === 'casa' ? 'Casa' : (type === 'campo' ? 'Campo' : 'Terreno');
+        }
+
+        function renderCard(p) {
+            const cover = p.images && p.images.length > 0 ? cloudinaryThumb(p.images[0].url, 'w_600,h_450,c_fill,q_auto,f_auto') : '';
+            return `
+            <a href="propiedades.html?ver=${encodeURIComponent(p.id)}" class="group block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="h-56 bg-gray-200 relative overflow-hidden">
+                    ${cover ? `<img src="${escapeHtml(cover)}" alt="${escapeHtml(p.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : ''}
+                    <div class="absolute top-4 left-4 flex flex-wrap gap-1.5">
+                        <span class="bg-brandRed text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">${typeLabel(p.type)}</span>
+                        <span class="${p.operation === 'Alquiler' ? 'bg-emerald-600' : 'bg-brandNavy'} text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">${escapeHtml(p.operation || 'Venta')}</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-brandNavy group-hover:text-brandBlue transition-colors mb-2 line-clamp-2">${escapeHtml(p.title)}</h3>
+                    <p class="text-brandBlue font-extrabold text-2xl mb-3">${escapeHtml(p.price)}</p>
+                    <p class="text-gray-500 text-sm flex items-center"><i class="fa-solid fa-location-dot text-brandRed mr-2"></i> ${escapeHtml(p.location)}</p>
+                    ${p.sqm ? `<p class="text-gray-500 text-xs mt-3"><i class="fa-solid fa-ruler-combined text-brandBlue mr-1"></i> ${escapeHtml(p.sqm)} m²</p>` : ''}
+                </div>
+            </a>`;
+        }
+
+        async function loadSection(flagField, sectionId, gridId) {
+            try {
+                const snap = await getDocs(query(collection(db, "properties"), where(flagField, "==", true), limit(30)));
+                const items = snap.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => createdMs(b) - createdMs(a))
+                    .slice(0, MAX_PER_SECTION);
+                if (items.length === 0) return;
+                document.getElementById(gridId).innerHTML = items.map(renderCard).join('');
+                document.getElementById(sectionId).classList.remove('hidden');
+            } catch (error) {
+                console.warn(`No se pudo cargar "${flagField}":`, error.message);
+            }
+        }
+
+        loadSection("featured", "featuredSection", "featuredGrid");
+        loadSection("investment", "investmentSection", "investmentGrid");
     </script>
 </body>
 </html>

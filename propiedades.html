@@ -146,6 +146,7 @@
                 <button onclick="filterProperties('terreno')" id="filter-terreno" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Terrenos</button>
                 <button onclick="filterProperties('Venta')" id="filter-Venta" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Venta</button>
                 <button onclick="filterProperties('campo')" id="filter-campo" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Campos</button>
+                <button onclick="filterProperties('inversion')" id="filter-inversion" class="filter-btn text-gray-600 hover:text-brandBlue px-4 py-2 text-sm font-medium transition-all">Inversión</button>
             </div>
         </div>
 
@@ -411,8 +412,25 @@
                         <textarea id="newDesc" rows="3" required placeholder="Detalles de la propiedad..." class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm"></textarea>
                     </div>
 
+                    <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg bg-amber-50/40 cursor-pointer">
+                            <input type="checkbox" id="newFeatured" class="mt-1 w-4 h-4 accent-brandBlue">
+                            <span>
+                                <span class="block text-sm font-semibold text-gray-800"><i class="fa-solid fa-star text-amber-500 mr-1"></i> Destacada</span>
+                                <span class="block text-xs text-gray-500">Aparece primero en el catálogo y en la home.</span>
+                            </span>
+                        </label>
+                        <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg bg-emerald-50/40 cursor-pointer">
+                            <input type="checkbox" id="newInvestment" class="mt-1 w-4 h-4 accent-brandBlue">
+                            <span>
+                                <span class="block text-sm font-semibold text-gray-800"><i class="fa-solid fa-chart-line text-emerald-600 mr-1"></i> Posibilidad de inversión</span>
+                                <span class="block text-xs text-gray-500">Se muestra en la sección y el filtro "Inversión".</span>
+                            </span>
+                        </label>
+                    </div>
+
                     <div class="md:col-span-2 mt-2">
-                        <button type="submit" id="submitPropBtn" class="w-full bg-brandRed text-white py-3 rounded-lg hover:bg-brandRedHover font-bold transition-colors shadow-md flex items-center justify-center gap-2">
+                        <button type="submit" id="submitPropBtn"class="w-full bg-brandRed text-white py-3 rounded-lg hover:bg-brandRedHover font-bold transition-colors shadow-md flex items-center justify-center gap-2">
                             <span id="submitPropBtnLabel">Publicar Inmueble</span>
                         </button>
                     </div>
@@ -462,6 +480,8 @@
             limit,
             startAfter,
             getDocs,
+            getDoc,
+            where,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -489,6 +509,7 @@
         let properties = [];
         let baseProperties = [];
         let extraProperties = [];
+        let curatedProperties = []; // destacadas + inversión, cargadas aparte para que no dependan de la paginación
         let selectedFiles = [];
         let existingImages = [];
         let editingPropertyId = null;
@@ -498,8 +519,9 @@
         // Read search params coming from index.html's quick search bar
         const urlParams = new URLSearchParams(window.location.search);
         const initialType = urlParams.get('tipo');
+        let initialPropertyId = urlParams.get('ver'); // ficha a abrir directo (links desde la home)
         let locationQuery = (urlParams.get('ubicacion') || '').trim().toLowerCase();
-        if (initialType === 'casa' || initialType === 'terreno' || initialType === 'campo') {
+        if (['casa', 'terreno', 'campo', 'inversion'].includes(initialType)) {
             activeCategory = initialType;
         }
 
@@ -520,10 +542,67 @@
         let hasMoreProperties = false;
 
         const propertiesRef = collection(db, "properties");
-        const q = query(propertiesRef, orderBy("createdAt", "desc"), limit(PAGE_SIZE));
+        let unsubscribeProperties = null;
+        let listenerUnlimited = false;
 
         function recomputeProperties() {
-            properties = [...baseProperties, ...extraProperties];
+            const seen = new Set();
+            properties = [];
+            [...baseProperties, ...extraProperties, ...curatedProperties].forEach(p => {
+                if (!seen.has(p.id)) {
+                    seen.add(p.id);
+                    properties.push(p);
+                }
+            });
+        }
+
+        // Destacadas e inversión son pocas: se traen aparte y siempre, así aparecen aunque caigan fuera de la
+        // primera página de 12 que ven los visitantes.
+        let featuredDocs = [];
+        let investmentDocs = [];
+        let baseLoaded = false;
+        let initialFetchTried = false;
+
+        function startCuratedListeners() {
+            const handle = (assign) => (snapshot) => {
+                assign(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+                curatedProperties = [...featuredDocs, ...investmentDocs];
+                recomputeProperties();
+                window.applyFilters();
+                renderOwnerPropertyList();
+                tryOpenInitialProperty();
+            };
+            const onError = (error) => console.warn("No se pudieron cargar las propiedades destacadas/inversión:", error.message);
+            onSnapshot(query(propertiesRef, where("featured", "==", true)), handle(d => { featuredDocs = d; }), onError);
+            onSnapshot(query(propertiesRef, where("investment", "==", true)), handle(d => { investmentDocs = d; }), onError);
+        }
+
+        // Abre la ficha indicada en ?ver=<id> (links desde la home). Si no está en lo ya cargado, la pide directo.
+        async function tryOpenInitialProperty() {
+            if (!initialPropertyId) return;
+            const id = initialPropertyId;
+            if (properties.some(p => p.id === id)) {
+                initialPropertyId = null;
+                window.openDetailModal(id);
+                return;
+            }
+            if (!baseLoaded || initialFetchTried) return;
+            initialFetchTried = true;
+            try {
+                const snap = await getDoc(doc(db, "properties", id));
+                if (snap.exists()) {
+                    extraProperties = extraProperties.concat([{ id: snap.id, ...snap.data() }]);
+                    recomputeProperties();
+                    window.applyFilters();
+                    initialPropertyId = null;
+                    window.openDetailModal(id);
+                } else {
+                    initialPropertyId = null;
+                }
+            } catch (error) {
+                console.warn("No se pudo abrir la propiedad indicada:", error.message);
+                initialPropertyId = null;
+            }
         }
 
         function updateLoadMoreButton() {
@@ -561,25 +640,42 @@
             }
         };
 
-        onSnapshot(q, (snapshot) => {
-            baseProperties = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-            hasMoreProperties = snapshot.docs.length === PAGE_SIZE;
-            recomputeProperties();
-            window.applyFilters();
-            renderOwnerPropertyList();
-            updateLoadMoreButton();
-        }, (error) => {
-            console.error("Firestore error:", error);
-            document.getElementById('propertyGrid').innerHTML = `
-                <div class="col-span-full text-center py-12 text-rose-500 font-semibold">
-                    Error de conexión con Firebase. Verifica tus credenciales en el código.
-                </div>
-            `;
-        });
+        // Visitantes: primera página liviana (12) + "Cargar más". Dueño logueado: todas las propiedades
+        // en tiempo real, para que el panel de administración vea y refresque el catálogo completo.
+        function startPropertiesListener(unlimited) {
+            if (unsubscribeProperties) unsubscribeProperties();
+            listenerUnlimited = unlimited;
+            extraProperties = [];
+
+            const listenerQuery = unlimited
+                ? query(propertiesRef, orderBy("createdAt", "desc"))
+                : query(propertiesRef, orderBy("createdAt", "desc"), limit(PAGE_SIZE));
+
+            unsubscribeProperties = onSnapshot(listenerQuery, (snapshot) => {
+                baseProperties = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+                hasMoreProperties = !unlimited && snapshot.docs.length === PAGE_SIZE;
+                baseLoaded = true;
+                recomputeProperties();
+                window.applyFilters();
+                renderOwnerPropertyList();
+                updateLoadMoreButton();
+                tryOpenInitialProperty();
+            }, (error) => {
+                console.error("Firestore error:", error);
+                document.getElementById('propertyGrid').innerHTML = `
+                    <div class="col-span-full text-center py-12 text-rose-500 font-semibold">
+                        Error de conexión con Firebase. Verifica tus credenciales en el código.
+                    </div>
+                `;
+            });
+        }
+
+        startPropertiesListener(false);
+        startCuratedListeners();
 
         // =========================================================================
         // 2b. CLOUDINARY CLEANUP LOG (imágenes pendientes de borrar a mano)
@@ -683,6 +779,7 @@
         // =========================================================================
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
+            if (!!user !== listenerUnlimited) startPropertiesListener(!!user);
             if (user) {
                 document.getElementById('ownerBanner').classList.remove('hidden');
                 document.getElementById('loginTriggerBtn').classList.add('hidden');
@@ -736,6 +833,11 @@
             return digitsOnly ? parseInt(digitsOnly, 10) : 0;
         }
 
+        // createdAt es null un instante después de guardar (serverTimestamp pendiente): se trata como "ahora".
+        function createdMs(p) {
+            return p.createdAt && p.createdAt.toMillis ? p.createdAt.toMillis() : Date.now();
+        }
+
         function getFilteredSortedProperties() {
             const minPrice = parseFloat(document.getElementById('filterMinPrice')?.value) || 0;
             const maxPriceRaw = document.getElementById('filterMaxPrice')?.value;
@@ -747,7 +849,8 @@
             const sortBy = document.getElementById('sortSelect')?.value || 'recent';
 
             const filtered = properties.filter(p => {
-                const matchesCategory = activeCategory === 'todos' || p.type === activeCategory || p.operation === activeCategory;
+                const matchesCategory = activeCategory === 'todos'
+                    || (activeCategory === 'inversion' ? p.investment === true : (p.type === activeCategory || p.operation === activeCategory));
                 const matchesLocation = !locationQuery || (p.location || '').toLowerCase().includes(locationQuery);
                 const priceVal = parsePriceValue(p.price);
                 const matchesPrice = priceVal >= minPrice && priceVal <= maxPrice;
@@ -763,7 +866,8 @@
                     case 'price-desc': return parsePriceValue(b.price) - parsePriceValue(a.price);
                     case 'sqm-asc': return (a.sqm || 0) - (b.sqm || 0);
                     case 'sqm-desc': return (b.sqm || 0) - (a.sqm || 0);
-                    default: return 0; // 'recent' keeps Firestore's createdAt-desc order
+                    default: // 'recent': destacadas primero, después las más nuevas
+                        return (b.featured === true) - (a.featured === true) || createdMs(b) - createdMs(a);
                 }
             });
 
@@ -905,13 +1009,15 @@
                         <img src="${escapeHtml(cloudinaryThumb(coverImage, 'w_600,h_450,c_fill,q_auto,f_auto'))}" alt="${escapeHtml(p.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         
                         <!-- BADGES -->
-                        <div class="absolute top-4 left-4 flex gap-1.5 z-10">
+                        <div class="absolute top-4 left-4 right-16 flex flex-wrap gap-1.5 z-10">
                             <span class="bg-brandRed text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
                                 ${p.type === 'casa' ? 'Casa' : (p.type === 'campo' ? 'Campo' : 'Terreno')}
                             </span>
                             <span class="${isAlquiler ? 'bg-emerald-600' : 'bg-brandNavy'} text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
                                 ${escapeHtml(p.operation || 'Venta')}
                             </span>
+                            ${p.featured === true ? `<span class="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider"><i class="fa-solid fa-star mr-1"></i>Destacada</span>` : ''}
+                            ${p.investment === true ? `<span class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider"><i class="fa-solid fa-chart-line mr-1"></i>Inversión</span>` : ''}
                         </div>
 
                         ${currentUser ? `
@@ -962,6 +1068,12 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="window.toggleFlag('${p.id}', 'featured')" title="${p.featured === true ? 'Quitar de destacadas' : 'Marcar como destacada'}" class="w-8 h-8 rounded-lg border flex items-center justify-center transition-colors ${p.featured === true ? 'bg-amber-100 border-amber-300 text-amber-600' : 'bg-white border-gray-200 text-gray-300 hover:text-amber-500'}">
+                            <i class="fa-solid fa-star"></i>
+                        </button>
+                        <button onclick="window.toggleFlag('${p.id}', 'investment')" title="${p.investment === true ? 'Quitar de inversión' : 'Marcar como posibilidad de inversión'}" class="w-8 h-8 rounded-lg border flex items-center justify-center transition-colors ${p.investment === true ? 'bg-emerald-100 border-emerald-300 text-emerald-700' : 'bg-white border-gray-200 text-gray-300 hover:text-emerald-600'}">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </button>
                         <button onclick="window.startEditProperty('${p.id}')" class="bg-blue-100 hover:bg-blue-200 text-brandBlue border border-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5">
                             <i class="fa-solid fa-pen"></i> Editar
                         </button>
@@ -1072,12 +1184,28 @@
             document.getElementById('newBeds').value = p.beds || 0;
             document.getElementById('newBaths').value = p.baths || 0;
             document.getElementById('newDesc').value = p.description || '';
+            document.getElementById('newFeatured').checked = p.featured === true;
+            document.getElementById('newInvestment').checked = p.investment === true;
 
             renderImagePreviews();
             document.getElementById('editIndicator').classList.remove('hidden');
             document.getElementById('submitPropBtnLabel').textContent = 'Guardar Cambios';
 
             window.switchTab('add');
+        };
+
+        // Activa/desactiva "featured" o "investment" de una propiedad con un clic desde la lista del panel.
+        window.toggleFlag = async function(id, field) {
+            if (!currentUser) return alert('Debes estar autenticado para realizar esta acción.');
+            if (field !== 'featured' && field !== 'investment') return;
+            const p = properties.find(item => item.id === id);
+            if (!p) return;
+            try {
+                await updateDoc(doc(db, "properties", id), { [field]: p[field] !== true });
+            } catch (error) {
+                console.error("Error updating flag:", error);
+                alert("No se pudo actualizar: " + error.message);
+            }
         };
 
         window.cancelEdit = function() {
@@ -1140,6 +1268,8 @@
                 const lngRaw = document.getElementById('newLng').value;
 
                 const propertyData = {
+                    featured: document.getElementById('newFeatured').checked,
+                    investment: document.getElementById('newInvestment').checked,
                     title: document.getElementById('newTitle').value,
                     type: document.getElementById('newType').value,
                     operation: document.getElementById('newOperation').value,
@@ -1330,6 +1460,8 @@
                     <div class="flex gap-2 mb-2">
                         <span class="inline-block bg-blue-200 text-brandBlue text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">${escapeHtml(p.type)}</span>
                         <span class="inline-block bg-slate-200 text-slate-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">${escapeHtml(p.operation || 'Venta')}</span>
+                        ${p.featured === true ? `<span class="inline-block bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider"><i class="fa-solid fa-star mr-1"></i>Destacada</span>` : ''}
+                        ${p.investment === true ? `<span class="inline-block bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider"><i class="fa-solid fa-chart-line mr-1"></i>Inversión</span>` : ''}
                     </div>
                     <h2 id="detailModalTitle" class="font-serif text-3xl font-bold text-brandNavy">${escapeHtml(p.title)}</h2>
                     <p class="text-gray-500 text-sm mt-1 flex items-center">
